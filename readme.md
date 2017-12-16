@@ -2,6 +2,10 @@
 
 This app can help you download images from [Beautyland](https://beautyland.royvbtw.uk).
 
+## Require
+
+This app requires node.js and npm.
+
 ## Usage
 
 + **Input**: post id
