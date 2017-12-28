@@ -19,11 +19,11 @@ The downaloded images will be saved in DEFAULT_PATH which is a variable in the c
 For the example url below:
 ```
 // For beautyland
-https://beautyland.royvbtw.uk/post/**M.1508758506.A.F1D**
+https://beautyland.royvbtw.uk/post/M.1508758506.A.F1D
 post-id: M.1508758506.A.F1D
 
 // For Beautyland-API
-https://beautyland-api.royvbtw.uk/post/**M.1514476752.A.871**
+https://beautyland-api.royvbtw.uk/post/M.1514476752.A.871
 post-id: M.1514476752.A.871
 
 ```
