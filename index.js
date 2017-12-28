@@ -2,7 +2,7 @@
 /**
  * get-beautyland-images: Get Beautyland images
  * 
- * This app can help you download images from Beautyland API.
+ * This app can help you download images from Beautyland API and Beautyland.
  * 
  * Input: post id
  * Output: images in the given post
