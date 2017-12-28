@@ -26,43 +26,59 @@ if(!fs.existsSync(DEFAULT_PATH)){
   fs.mkdirSync(DEFAULT_PATH);
 }
 
-console.log('Enter quit to exit this app.');
-
 const rl = readline.createInterface({
-  input: process.stdin, 
-  output: process.stdout,
-  prompt: 'Please enter the post id: '
+  input: process.stdin,
+  output: process.stdout
 });
 
-rl.prompt();
+console.log(`Beautyland Image Downloader`);
+console.log(`The path of saved images: ${DEFAULT_PATH}`);
 
-rl.on('line', async (line) => {
-  switch(line){
-    case 'quit':
-      rl.close();
-      break;
-    default:
-      try{
-        const post = await fetchPost(line.trim());
-        downloadImages(post);
-        rl.prompt();
-        break;
-      }catch(ex){
-        console.log('Error: ', ex);
-        rl.prompt();
-        break;
+const main = async () => {
+  while(true){
+    console.log('----------');
+    console.log('Enter [quit] to exit this app.');
+    try{
+      const postId = await prompt('Please enter the post id: ');
+      if(postId === 'quit'){
+        console.log(`Bye`);
+        process.exit(0);
+        return;
       }
+      if(postId === ''){
+        console.log(`The post id should not be empty.`);
+        continue;
+      }
+
+      const post = await fetchPost(postId.trim());
+      const promptMessage = `Please enter the file name\n(Keep empty for default: ${post.title}): `;
+      const newTitle = await prompt(promptMessage);
+      if(newTitle !== ''){
+        post.title = newTitle;
+      }
+      downloadImages(post);
+    }catch(ex){
+      console.log(ex);
+    }
   }
-}).on('close', () => {
-  console.log(`Bye`);
-  process.exit(0);
-});
+};
+
+
+const prompt = async (message) => {
+  return new Promise( (resolve) => {
+    rl.question(message, input => {
+      return resolve(input);
+    });
+  });
+};
+
 
 const fetchPost = (postId) => {
   return new Promise( (resolve, reject) => {
     const url = 'https://beautyland-api.royvbtw.uk/post/' + postId;
     request.get(url, (error, response, body) => {
       if(error){
+        console.log(`Error in request`);
         return reject('Error in fetchPost()');
       }
 
@@ -70,8 +86,7 @@ const fetchPost = (postId) => {
         const json = JSON.parse(body);
         return resolve(json);
       }else if(response && response.statusCode === 404){
-        const json = JSON.parse(body);
-        return reject(`404: ${json.message}`);
+        return reject(`404: The post [${postId}] does not exist.`);
       }else{
         return reject(`Error: bad response`);
       }
@@ -79,19 +94,32 @@ const fetchPost = (postId) => {
   });
 };
 
+
 const downloadImages = (post) => {
   console.log(`Downloading ${post.title}, ${post.images.length} images`);
+
+  const title = formatTitle(post.title);
 
   post.images.forEach( (item, i) => {
     console.log(`${i}: Downloading ${item.url}`);
     request.get(item.url)
       .pipe(fs.createWriteStream(buildFilename({
-        title: post.title, index: i, postId: post.postId
+        title,
+        index: i, 
+        postId: post.postId
       })));
   });
+  console.log(`Download finished.`);
 };
 
 const buildFilename = ({title, index, postId} = {}) => {
   const formattedIndex = ('0' + index).slice(-2);
   return DEFAULT_PATH + '/' + postId + '_' + title + '_' + formattedIndex + '.jpg';
 };
+
+const formatTitle = (title) => {
+  return title.replace(/[`~!@$%^&*|:?'"<>\/\\]/g, '_');
+};
+
+
+main();
