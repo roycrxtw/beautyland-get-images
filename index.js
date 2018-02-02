@@ -75,7 +75,7 @@ const prompt = async (message) => {
 
 const fetchPost = (postId) => {
   return new Promise( (resolve, reject) => {
-    const url = 'https://beautyland-api.royvbtw.uk/post/' + postId;
+    const url = 'https://beautyland-api.royvbtw.uk/posts/' + postId;
     request.get(url, (error, response, body) => {
       if(error){
         console.log(`Error in request`);
